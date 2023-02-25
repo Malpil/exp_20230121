@@ -93,6 +93,39 @@ router.get('/selectshop.json', async function (req, res, next) {
 
 });
 
+//빵집 한개 조회 => /api/bakery/bakeryoneshop.json?_id=15
+router.get('/bakeryoneshop.json', async function (req, res, next) {
+  try{
+    const no =  Number(req.query._id);
+    const query = {_id: no};
+    const project = {
+      filedata: 0,
+      filename: 0,
+      filesize: 0,
+      filetype: 0,
+    };
+
+    const result = await Bakery.findOne(query,project);
+
+    if(result !== null) {
+      result.regdate = moment(result.regdate).format("YYYY-MM-DD");
+      result.imageurl = `/api/board/imge?_id=${no}&ts=${Date.now()}`;
+      
+      return res.send({ 
+        status: 200,
+        result: result,
+      });
+    }
+    return res.send({status : 0});
+  } catch(e) {
+      console.error(e);
+      return res.send({ status: -1, result: e });
+    }
+});
+
+
+
+
 //이미지 URL => 127.0.0.1:3000/api/bakery/image?_id=3
 //<img src="/api/bakery/image?_id=3">
 router.get('/image', async function (req, res, next) {
